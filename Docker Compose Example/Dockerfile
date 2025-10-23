@@ -26,7 +26,7 @@ RUN apt-get update \
 
 WORKDIR /app
 
-COPY --from=build /workspace/target/notebook-app-0.0.1-SNAPSHOT.jar ./app.jar
+COPY --from=build /workspace/target/notebook-app-0.0.1-SNAPSHOT.war ./app.war
 
 RUN chown -R spring:spring /app /app
 RUN mkdir /app/cache
@@ -35,4 +35,4 @@ USER spring
 
 EXPOSE 80
 
-CMD ["java", "-jar", "/app/app.jar"]
+CMD ["java", "-jar", "/app/app.war"]
