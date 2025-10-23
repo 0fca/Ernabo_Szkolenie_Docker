@@ -1,0 +1,55 @@
+services:
+  app:
+    build:
+      context: .
+    image: notebook-app:latest
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=notebook
+      - DB_USER=notebook
+      - DB_PASSWORD=notebook
+    ports:
+      - "7000:80"
+    volumes:
+      - ./logs/app:/app/logs:rw
+      - app-overlay-cache:/app/cache
+    networks:
+      app-net:
+        ipv4_address: 10.0.0.3
+
+  db:
+    image: postgres:18-alpine
+    environment:
+      - POSTGRES_DB=notebook
+      - POSTGRES_USER=notebook
+      - POSTGRES_PASSWORD=notebook
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U notebook -d notebook"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "6432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./docker/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      app-net:
+        ipv4_address: 10.0.0.2
+
+volumes:
+  postgres-data:
+    driver: local
+  app-overlay-cache:
+    driver: local
+
+networks:
+  app-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.0.0/29

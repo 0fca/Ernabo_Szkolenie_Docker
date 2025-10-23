@@ -1,0 +1,2 @@
+-- Optional PostgreSQL initialization hook.
+-- Add custom database-wide settings here if needed.
