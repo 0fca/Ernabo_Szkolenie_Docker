@@ -1,0 +1,20 @@
+services:
+  jenkins:
+    build:
+      context: ./jenkins
+    container_name: jenkins
+    restart: unless-stopped
+    user: "0:0"                   # run as root so Docker socket access works out of the box
+    ports:
+      - "8080:8080"               # Web UI
+      - "50000:50000"             # Inbound agents (optional)
+    environment:
+      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
+      GITLAB_URL: "${GITLAB_URL}"
+      GITLAB_TOKEN: "${GITLAB_TOKEN}"
+      JENKINS_ADMIN_USER: "${JENKINS_ADMIN_USER}"
+      JENKINS_ADMIN_PASS: "${JENKINS_ADMIN_PASS}"
+    volumes:
+      - ./jenkins_home:/var/jenkins_home           # bind-mount: all Jenkins data/config live on the host
+      - ./jenkins/jenkins.yaml:/var/jenkins_home/jenkins.yaml:ro
+      - /var/run/docker.sock:/var/run/docker.sock  # allow Docker CLI inside Jenkins to use the host Docker

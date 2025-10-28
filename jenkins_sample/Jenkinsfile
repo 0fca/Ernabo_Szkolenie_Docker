@@ -1,0 +1,22 @@
+pipeline {
+  agent any
+  options { timestamps() }
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+    stage('Build image') {
+      steps {
+        sh 'docker build -t myapp:ci .'
+      }
+    }
+    stage('Test in container') {
+      steps {
+        sh 'docker run --rm myapp:ci ./run-tests.sh'
+      }
+    }
+  }
+}
+

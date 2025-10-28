@@ -1,0 +1,39 @@
+jenkins:
+  systemMessage: "Provisioned by JCasC. Docker-enabled. GitLab connected.\n"
+  numExecutors: 2
+  mode: NORMAL
+  # Local admin user
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "${JENKINS_ADMIN_USER}"
+          password: "${JENKINS_ADMIN_PASS}"
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+unclassified:
+  location:
+    url: "http://localhost:8080/"          # adjust if behind a reverse proxy / different host
+  gitLabServers:
+    servers:
+      - name: "gitlab"
+        serverUrl: "${GITLAB_URL}"
+        manageWebHooks: true
+        manageSystemHooks: false
+        credentialsId: "gitlab-token"
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - string:
+              scope: GLOBAL
+              id: "gitlab-token"
+              description: "GitLab Personal Access Token for Jenkins"
+              secret: "${GITLAB_TOKEN}"
+tool:
+  git:
+    installations:
+      - name: "Default"
+        home: "git"
+
